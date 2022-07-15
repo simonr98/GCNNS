@@ -1,0 +1,51 @@
+import torch as T
+from preprocessing import get_all_trajectories, get_train_data, get_one_trajectory, join_trajectories
+from torch.utils.data import Dataset
+import matplotlib.pyplot as plt
+
+
+class VoxelDataset(Dataset):
+    def __init__(self, data, targets):
+        self.data = T.from_numpy(data).float()
+        self.targets = T.LongTensor(targets)
+
+    def __getitem__(self, index):
+        x = self.data[index]
+        y = self.targets[index]
+
+        return x, y
+
+    def __len__(self):
+        return len(self.data)
+
+
+##########################################################################################################
+# TEST
+##########################################################################################################
+if __name__ == '__main__':
+    nodes, pcd, target = get_all_trajectories(get_train_data(), 50)
+    nodes, pcd, target = join_trajectories(nodes), join_trajectories(pcd), join_trajectories(target)
+    dataset = VoxelDataset(data=pcd, targets=target)
+
+    #####################
+    # plot point of interest over time
+    #####################
+
+    fig = plt.figure(1, figsize=(100, 100))
+
+    for i in range(1, 60):
+        fig.add_subplot(10, 6, i)
+
+        x, y = pcd[i][:,0], pcd[i][:,1]
+        plt.scatter(x, y)
+
+        x, y = target[i, 0], target[i, 1]
+
+        plt.plot([x], [y], marker='o', markersize=10, color="red")
+
+        i += 1
+
+    plt.show()
+
+
+
