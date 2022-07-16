@@ -2,7 +2,7 @@ import torch as T
 import matplotlib.pyplot as plt
 from torch.utils.data import Dataset
 
-from definitions import INDEX_TRACK_POINT
+from definitions import INDEX_TRACK_POINT, NUM_POINTS_POINT_CLOUD
 from util.preprocessing import *
 
 
@@ -25,7 +25,7 @@ class VoxelDataset(Dataset):
 # TEST
 ##########################################################################################################
 if __name__ == '__main__':
-    voxel_train_data = get_all_trajectories(get_train_data(), INDEX_TRACK_POINT)
+    voxel_train_data = get_all_trajectories(get_train_data(), INDEX_TRACK_POINT, NUM_POINTS_POINT_CLOUD)
     nodes, pcd, target = voxel_train_data.nodes, voxel_train_data.pcd, voxel_train_data.y
 
     nodes, pcd, target = join_trajectories(nodes), join_trajectories(pcd), join_trajectories(target)
