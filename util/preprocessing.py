@@ -1,11 +1,13 @@
 import numpy as np
 import pickle
+import os
 import matplotlib.pyplot as plt
+from definitions import ROOT_DIR
 
-with open(r"data/voxel/coarse_60steps_voxel_color_train.pkl", "rb") as input_file:
+with open(f"{ROOT_DIR}/data/voxel/coarse_60steps_voxel_color_train.pkl", "rb") as input_file:
     train_data = pickle.load(input_file)
 
-with open(r"data/voxel/coarse_60steps_voxel_color_test.pkl", "rb") as input_file:
+with open(f"{ROOT_DIR}/data/voxel/coarse_60steps_voxel_color_test.pkl", "rb") as input_file:
     test_data = pickle.load(input_file)
 
 

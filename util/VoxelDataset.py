@@ -1,7 +1,8 @@
 import torch as T
 import matplotlib.pyplot as plt
 from torch.utils.data import Dataset
-from utils.preprocessing import *
+
+from util.preprocessing import *
 
 
 class VoxelDataset(Dataset):
