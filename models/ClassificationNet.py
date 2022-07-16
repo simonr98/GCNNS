@@ -5,7 +5,7 @@ from torch_geometric.nn import MLP, DynamicEdgeConv, global_max_pool
 
 
 class ClassificationNet(torch.nn.Module):
-    def __init__(self, out_channels, k=20, aggr='max'):
+    def __init__(self, out_channels: int, k: int = 20, aggr: str = 'max'):
         super().__init__()
 
         self.conv1 = DynamicEdgeConv(MLP([2 * 3, 64, 64, 64]), k, aggr)

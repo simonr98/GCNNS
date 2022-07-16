@@ -1,6 +1,6 @@
 from cw2.cw_data import cw_logging
 from cw2 import experiment, cluster_work, cw_error
-from util.Experiment import Experiment
+from Experiment import Experiment
 
 
 class CustomExperiment(experiment.AbstractExperiment):

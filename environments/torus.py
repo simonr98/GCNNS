@@ -16,7 +16,7 @@ tex = p.loadTexture("uvmap.png")
 planeId = p.loadURDF("plane.urdf", [0, 0, -2])
 boxId = p.loadURDF("cube.urdf", [0, 3, 2], useMaximalCoordinates=True)
 
-bunnyId = p.loadSoftBody("torus/torus_textured.obj", simFileName="torus.vtk", mass=3, useNeoHookean=1,
+bunnyId = p.loadSoftBody("torus/torus_textured.obj", simFileName="torus.vtk", mass=4, useNeoHookean=1,
                          NeoHookeanMu=180, NeoHookeanLambda=600, NeoHookeanDamping=0.01, collisionMargin=0.006,
                          useSelfCollision=1, frictionCoeff=0.5, repulsionStiffness=800)
 
@@ -57,6 +57,7 @@ while p.isConnected():
     noise = np.random.normal(0, 0.05 * min_mean, pcd.shape)
 
     pcd = pcd + noise
+
 
     ###############################################################################
     # TEST

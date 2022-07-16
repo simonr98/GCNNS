@@ -30,6 +30,7 @@ repetitions: 1   # repeat 8 times
 
 # Experiment Parameters
 params:
+  algorithm: 'else'
   num_epochs: 200
   track_point_index: 67
 

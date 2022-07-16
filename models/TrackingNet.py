@@ -5,7 +5,7 @@ from torch_geometric.nn import MLP, DynamicEdgeConv, global_max_pool
 
 
 class TrackingNet(torch.nn.Module):
-    def __init__(self, out_channels, k=20, aggr='max', point_dim=2):
+    def __init__(self, out_channels: int, k: int = 20, aggr: str = 'max', point_dim: int = 2):
         super().__init__()
 
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
