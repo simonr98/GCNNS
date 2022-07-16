@@ -2,14 +2,8 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
-from definitions import ROOT_DIR, INDEX_TRACK_POINT, INDEX_TRAJECTORY
+from definitions import ROOT_DIR, INDEX_TRACK_POINT_VOXEL, INDEX_TRAJECTORY
 from typing import Optional
-
-with open(f"{ROOT_DIR}/data/voxel/coarse_60steps_voxel_color_train.pkl", "rb") as input_file:
-    train_data = pickle.load(input_file)
-
-with open(f"{ROOT_DIR}/data/voxel/coarse_60steps_voxel_color_test.pkl", "rb") as input_file:
-    test_data = pickle.load(input_file)
 
 
 @dataclass
@@ -19,15 +13,29 @@ class VoxelData:
     y: np.ndarray
 
 
-def get_train_data():
+with open(f"{ROOT_DIR}/data/torus/t1.pkl", "rb") as input_file:
+    train = pickle.load(input_file)
+
+print()
+
+
+def get_train_data(torus: bool = False):
+    if torus:
+        with open(f"{ROOT_DIR}/data/torus/t1.pkl", "rb") as input_file:
+            train_data = pickle.load(input_file)
+    else:
+        with open(f"{ROOT_DIR}/data/voxel/coarse_60steps_voxel_color_train.pkl", "rb") as input_file:
+            train_data = pickle.load(input_file)
     return train_data
 
 
-def get_test_data():
+def get_test_data(torus: bool = False):
+    with open(f"{ROOT_DIR}/data/voxel/coarse_60steps_voxel_color_test.pkl", "rb") as input_file:
+        test_data = pickle.load(input_file)
     return test_data
 
 
-def get_one_trajectory(train_data: Optional[list], index_t: int, index_poi: int, num_points_point_cloud=60):
+def get_one_voxel_trajectory(train_data: Optional[list], index_t: int, index_poi: int, num_points_point_cloud=60):
     data_t = train_data[index_t]
     nodes, pcd, y = [], [], []
 
@@ -43,10 +51,10 @@ def get_one_trajectory(train_data: Optional[list], index_t: int, index_poi: int,
     return VoxelData(nodes, pcd, y)
 
 
-def get_all_trajectories(data: Optional[list], target_ind: int, num_points_point_cloud=60):
-    nodes = [get_one_trajectory(data, index, target_ind, num_points_point_cloud).nodes for index in range(len(data))]
-    pcd = [get_one_trajectory(data, index, target_ind, num_points_point_cloud).pcd for index in range(len(data))]
-    y = [get_one_trajectory(data, index, target_ind, num_points_point_cloud).y for index in range(len(data))]
+def get_all_voxel_trajectories(data: Optional[list], target_ind: int, num_points_point_cloud=60):
+    nodes = [get_one_voxel_trajectory(data, index, target_ind, num_points_point_cloud).nodes for index in range(len(data))]
+    pcd = [get_one_voxel_trajectory(data, index, target_ind, num_points_point_cloud).pcd for index in range(len(data))]
+    y = [get_one_voxel_trajectory(data, index, target_ind, num_points_point_cloud).y for index in range(len(data))]
 
     return VoxelData(np.array(nodes), np.array(pcd), np.array(y))
 
@@ -66,6 +74,7 @@ if __name__ == '__main__':
     test_all_trajectories = True
     test_join_trajectories = False
 
+    train_data = get_train_data(torus=False)
     # --------------------------------------------------------------------------------------------------
     # TEST 1 - TEST THE DATA - Points can move but cannot jump
     if test_data:
@@ -78,7 +87,7 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------
     # TEST 2 - TEST get_one_trajectory - nodes should be consistent
-    voxel_data = get_one_trajectory(train_data, INDEX_TRAJECTORY, INDEX_TRACK_POINT)
+    voxel_data = get_one_voxel_trajectory(train_data, INDEX_TRAJECTORY, INDEX_TRACK_POINT_VOXEL)
     nodes = voxel_data.nodes
 
     if test_one_trajectory:
@@ -88,7 +97,7 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------
     # TEST 3 - TEST get_all_trajectories - nodes should be consistent
-    voxel_data = get_all_trajectories(train_data, INDEX_TRACK_POINT)
+    voxel_data = get_all_voxel_trajectories(train_data, INDEX_TRACK_POINT_VOXEL)
     nodes = voxel_data.nodes
 
     if test_all_trajectories:
@@ -98,7 +107,7 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------
     # TEST 4 - TEST join_trajectories
-    voxel_data = get_all_trajectories(train_data, 50)
+    voxel_data = get_all_voxel_trajectories(train_data, 50)
     nodes, pcd, y = voxel_data.nodes, voxel_data.pcd, voxel_data.y
 
     if test_join_trajectories:
