@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
@@ -13,15 +15,18 @@ class VoxelData:
     y: np.ndarray
 
 
-with open(f"{ROOT_DIR}/data/torus/t1.pkl", "rb") as input_file:
-    train = pickle.load(input_file)
-
-print()
+@dataclass
+class TorusData:
+    mesh: np.ndarray
+    com: np.ndarray
+    pcd: np.ndarray
+    pcd_without_noise: np.ndarray
+    pos: np.ndarray
 
 
 def get_train_data(torus: bool = False):
     if torus:
-        with open(f"{ROOT_DIR}/data/torus/t1.pkl", "rb") as input_file:
+        with open(f"{ROOT_DIR}/data/torus/train/t1.pkl", "rb") as input_file:
             train_data = pickle.load(input_file)
     else:
         with open(f"{ROOT_DIR}/data/voxel/coarse_60steps_voxel_color_train.pkl", "rb") as input_file:
@@ -51,12 +56,29 @@ def get_one_voxel_trajectory(train_data: Optional[list], index_t: int, index_poi
     return VoxelData(nodes, pcd, y)
 
 
-def get_all_voxel_trajectories(data: Optional[list], target_ind: int, num_points_point_cloud=60):
-    nodes = [get_one_voxel_trajectory(data, index, target_ind, num_points_point_cloud).nodes for index in range(len(data))]
+def get_voxel_data(data: Optional[list], target_ind: int, num_points_point_cloud=60):
+    nodes = [get_one_voxel_trajectory(data, index, target_ind, num_points_point_cloud).nodes for index in
+             range(len(data))]
     pcd = [get_one_voxel_trajectory(data, index, target_ind, num_points_point_cloud).pcd for index in range(len(data))]
     y = [get_one_voxel_trajectory(data, index, target_ind, num_points_point_cloud).y for index in range(len(data))]
 
     return VoxelData(np.array(nodes), np.array(pcd), np.array(y))
+
+
+def get_torus_data():
+    mesh, com, pcd_without_noise, pcd, pos = [], [], [], [], []
+
+    for filename in os.listdir(f'{ROOT_DIR}/data/torus/train'):
+        with open(f"{ROOT_DIR}/data/torus/train/{filename}", "rb") as input_file:
+            train_data = pickle.load(input_file)
+
+        mesh.append(train_data['mesh'])
+        com.append(train_data['com'])
+        pcd.append(train_data['pcd'])
+        pcd_without_noise.append(train_data['pcd_without_noise'])
+        pos.append(train_data['pos'])
+
+    return TorusData(np.array(mesh), np.array(com), np.array(pcd), np.array(pcd_without_noise), np.array(pos))
 
 
 def join_trajectories(data):
@@ -68,11 +90,11 @@ def join_trajectories(data):
 ##########################################################################################################
 
 if __name__ == '__main__':
-
     test_one_trajectory = False
     test_data = False
-    test_all_trajectories = True
+    test_all_trajectories = False
     test_join_trajectories = False
+    test_torus_data = True
 
     train_data = get_train_data(torus=False)
     # --------------------------------------------------------------------------------------------------
@@ -97,7 +119,7 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------
     # TEST 3 - TEST get_all_trajectories - nodes should be consistent
-    voxel_data = get_all_voxel_trajectories(train_data, INDEX_TRACK_POINT_VOXEL)
+    voxel_data = get_voxel_data(train_data, INDEX_TRACK_POINT_VOXEL)
     nodes = voxel_data.nodes
 
     if test_all_trajectories:
@@ -107,10 +129,24 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------
     # TEST 4 - TEST join_trajectories
-    voxel_data = get_all_voxel_trajectories(train_data, 50)
+    voxel_data = get_voxel_data(train_data, 50)
     nodes, pcd, y = voxel_data.nodes, voxel_data.pcd, voxel_data.y
 
     if test_join_trajectories:
         print(join_trajectories(pcd).shape)
         print(join_trajectories(nodes).shape)
         print(join_trajectories(y).shape)
+
+    # --------------------------------------------------------------------------------------------------
+    # TEST 5 - TEST get_torus_data
+    torus_data = get_torus_data()
+    mesh, com, pcd, pcd_without_noise, pos = torus_data.mesh, torus_data.com, torus_data.pcd, \
+                                             torus_data.pcd_without_noise, torus_data.pos
+
+    if test_torus_data:
+        print(mesh.shape)
+        print(com.shape)
+        print(pcd.shape)
+        print(pcd_without_noise.shape)
+        print(pos.shape)
+

@@ -3,6 +3,7 @@ import pybullet_data
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
+from numpy.random import default_rng
 from typing import Optional
 from definitions import INDEX_TRACK_POINT_TORUS, TRAJECTORY_LENGTH_TORUS
 
@@ -64,11 +65,10 @@ def main(test_mode: bool = False, save: bool = False, file_name: str = 't1.pkl')
     p.setPhysicsEngineParameter(sparseSdfVoxelSize=0.25)
     p.setRealTimeSimulation(0)
 
-    meshes, center_of_mass, pcds, point_on_surface = [], [], [], []
-
+    meshes, center_of_mass, pcds, pcds_without_noise, point_on_surface = [], [], [], [], []
     counter = 0
 
-    while p.isConnected():
+    while p.isConnected() and counter < TRAJECTORY_LENGTH_TORUS:
         p.stepSimulation()
         mesh = np.array(p.getMeshData(bunnyId)[1])
         average_of_mesh = np.sum(mesh, axis=0) / len(mesh)
@@ -97,6 +97,7 @@ def main(test_mode: bool = False, save: bool = False, file_name: str = 't1.pkl')
         pcd = pcd_without_noise + noise
         # ---------------------------------------------------------------------------
         pcds.append(pcd)
+        pcds_without_noise.append(pcd_without_noise)
         point_on_surface.append(mesh[INDEX_TRACK_POINT_TORUS])
 
         # ###############################################################################
@@ -110,20 +111,32 @@ def main(test_mode: bool = False, save: bool = False, file_name: str = 't1.pkl')
         # show average point in simulation
         p.addUserDebugPoints(np.reshape(average_of_mesh, (1, 3)), [[255, 0, 0]], 5)
         p.setGravity(0, 0, -10)
-
-        if counter == TRAJECTORY_LENGTH_TORUS:
-            if save:
-                data = {'mesh': meshes,
-                        'com': center_of_mass,
-                        'pcd': pcds,
-                        'pos': point_on_surface}
-
-                with open(f'../data/torus/{file_name}', 'wb') as handle:
-                    pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-            p.disconnect()
-
         counter += 1
+
+    # pcds, pcds without noise have different lengths - randomly select n points from them
+    min_num_points_pcd = min([len(x) for x in pcds] + [len(x) for x in pcds_without_noise])
+    rng = default_rng()
+    random_index = rng.choice(min_num_points_pcd, size=min_num_points_pcd, replace=False)
+
+    def reduce(p):
+        return [p[i] for i in random_index]
+
+    pcds, pcds_without_noise = [reduce(pcds[i]) for i in range(len(pcds))], \
+                               [reduce(pcds_without_noise[i]) for i in range(len(pcds))]
+
+    if save:
+        data = {
+            'mesh': meshes,
+            'com': center_of_mass,
+            'pcd_without_noise': pcds_without_noise,
+            'pcd': pcds,
+            'pos': point_on_surface
+        }
+
+        with open(f'../data/torus/train/{file_name}', 'wb') as handle:
+            pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+        p.disconnect()
 
 
 if __name__ == '__main__':
