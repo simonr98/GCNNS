@@ -17,17 +17,13 @@ def get_test_data():
     return test_data
 
 
-# define how much points we use from pointcloud
-points_point_cloud = 60
-
-
-def get_one_trajectory(train_data: [], index_t: int, index_poi: int):
+def get_one_trajectory(train_data: [], index_t: int, index_poi: int, num_points_point_cloud=60):
 
     data_t = train_data[index_t]
     nodes, pcd, y = [], [], []
 
     for p_pcd, p_node in zip(data_t['pcd_points'], data_t['nodes_grid']):
-        random = np.random.choice(p_pcd.shape[0], points_point_cloud, replace=False)
+        random = np.random.choice(p_pcd.shape[0], num_points_point_cloud, replace=False)
         pcd.append(p_pcd[random])
 
         nodes.append(p_node)
@@ -38,10 +34,10 @@ def get_one_trajectory(train_data: [], index_t: int, index_poi: int):
     return nodes, pcd, y
 
 
-def get_all_trajectories(data: [], target_ind: int):
-    nodes = [get_one_trajectory(data, index, target_ind)[0] for index in range(len(data))]
-    pcd = [get_one_trajectory(data, index, target_ind)[1] for index in range(len(data))]
-    y = [get_one_trajectory(data, index, target_ind)[2] for index in range(len(data))]
+def get_all_trajectories(data: [], target_ind: int, num_points_point_cloud=60):
+    nodes = [get_one_trajectory(data, index, target_ind, num_points_point_cloud)[0] for index in range(len(data))]
+    pcd = [get_one_trajectory(data, index, target_ind, num_points_point_cloud)[1] for index in range(len(data))]
+    y = [get_one_trajectory(data, index, target_ind, num_points_point_cloud)[2] for index in range(len(data))]
 
     return np.array(nodes), np.array(pcd), np.array(y)
 

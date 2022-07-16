@@ -1,7 +1,7 @@
 import torch as T
-from preprocessing import get_all_trajectories, get_train_data, get_one_trajectory, join_trajectories
-from torch.utils.data import Dataset
 import matplotlib.pyplot as plt
+from torch.utils.data import Dataset
+from utils.preprocessing import *
 
 
 class VoxelDataset(Dataset):
@@ -23,7 +23,7 @@ class VoxelDataset(Dataset):
 # TEST
 ##########################################################################################################
 if __name__ == '__main__':
-    nodes, pcd, target = get_all_trajectories(get_train_data(), 50)
+    nodes, pcd, target = get_all_trajectories(get_train_data(), 67)
     nodes, pcd, target = join_trajectories(nodes), join_trajectories(pcd), join_trajectories(target)
     dataset = VoxelDataset(data=pcd, targets=target)
 
