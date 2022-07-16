@@ -1,0 +1,35 @@
+---
+# Slurm config bwuni gpu
+name: "SLURM"   # MUST BE "SLURM"
+partition: "gpu_4"  # "single" for cpu, "gpu_4" or gpu_8" for gpu
+job-name: "test" # this will be the experiment's name in slurm
+num_parallel_jobs: 1  # max number of jobs executed in parallel
+ntasks: 1   #  leave that like it is
+cpus-per-task: 4   # there are 5 cores for each GPU on the gpu_8 queue and 10 per GPU on the gpu_4 queue. Never use 5! don't ask why!
+time: 1200   # in minutes
+sbatch_args:   # gpus need to be explicitly requested using this
+  gres: "gpu:1" #and this
+slurm_log: "../output/slurmlog/"
+
+---
+# DEFAULT parameters (Optional)
+name: "DEFAULT"   #  useful for paralellization. defaults to 1.
+reps_in_parallel: 1 # number of repetitions in each job that are executed in parallel. defaults to 1.
+reps_per_job: 1 # number of repetitions in each job.
+repetitions: 1  # number of times one set of parameters is run
+
+params:
+  # this is where you specify all parameters needed for your experiment.MUST BE DEFAULT
+  path: "output"   # location to save results in
+  track_point_index: 67
+
+---
+name: "EXP1"
+path: "output"
+repetitions: 1   # repeat 8 times
+
+# Experiment Parameters
+params:
+  num_epochs: 200
+  track_point_index: 67
+

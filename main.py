@@ -1,27 +1,23 @@
-import os.path as osp
-import torch_geometric.transforms as T
-from torch_geometric.datasets import ModelNet
-from torch_geometric.loader import DataLoader
+from cw2.cw_data import cw_logging
+from cw2 import experiment, cluster_work, cw_error
+from util.Experiment import Experiment
 
-from algorithms.ClassificationAlgorithm import ClassificationAlgorithm
 
-path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data/ModelNet10')
+class CustomExperiment(experiment.AbstractExperiment):
 
-number_of_points = 50
+    def initialize(self, config: dict, rep: int, logger: cw_logging.LoggerArray) -> None:
+        pass
 
-# Transform Mesh to Point Cloud
-pre_transform, transform = T.NormalizeScale(), T.SamplePoints(50)
+    def run(self, config: dict, rep: int, logger: cw_logging.LoggerArray) -> None:
+        my_config = config.get("params")
 
-train_dataset = ModelNet(path, '10', True, transform, pre_transform)
-test_dataset = ModelNet(path, '10', False, transform, pre_transform)
+        exp = Experiment(my_config)
+        exp.run_experiment()
 
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=6)
-test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False, num_workers=6)
+    def finalize(self, surrender: cw_error.ExperimentSurrender = None, crash: bool = False):
+        pass
 
-algorithm = ClassificationAlgorithm(num_classes=train_dataset.num_classes)
 
-for epoch in range(1, 201):
-    loss = algorithm.train(train_loader)
-    test_acc = algorithm.test(test_loader)
-    print(f'Epoch {epoch:03d}, Loss: {loss:.4f}, Test: {test_acc:.4f}')
-    algorithm.scheduler.step()
+if __name__ == "__main__":
+    cw = cluster_work.ClusterWork(CustomExperiment)
+    cw.run()

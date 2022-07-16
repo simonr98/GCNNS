@@ -42,8 +42,7 @@ while p.isConnected():
         return np.linalg.norm(a-b)
 
     distance_to_camera = np.apply_along_axis(distance, 1, mesh, np.array(camera_coordinates))
-
-    quantile = np.quantile(distance_to_camera, [0.1], axis=0)[0]
+    quantile = np.quantile(distance_to_camera, [0.2], axis=0)[0]
 
     #  Remove the rows whose first item is between 20 and 25
     pcd = np.delete(mesh, np.where(distance_to_camera > quantile)[0], 0)
@@ -51,7 +50,13 @@ while p.isConnected():
     # Random order for points to get Point Cloud data
     np.random.shuffle(pcd)
 
-    pcds.append(pcd)
+    # Add noise to the points to get Point Cloud data
+    x_mean, y_mean, z_mean = np.mean(pcd[:, 0]), np.mean(pcd[:, 1]), np.mean(pcd[:, 2])
+
+    min_mean = min(abs(x_mean), abs(y_mean), abs(z_mean))
+    noise = np.random.normal(0, 0.05 * min_mean, pcd.shape)
+
+    pcd = pcd + noise
 
     ###############################################################################
     # TEST
@@ -65,6 +70,7 @@ while p.isConnected():
     # plt.show()
     #
     # exit()
+    ###############################################################################
 
     # show average point in simulation
     p.addUserDebugPoints(np.reshape(average_of_mesh, (1,3)), [[255,0,0]], 5)
