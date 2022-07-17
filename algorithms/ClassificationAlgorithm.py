@@ -6,10 +6,10 @@ from models.ClassificationNet import ClassificationNet
 
 
 class ClassificationAlgorithm(Algorithm):
-    def __init__(self, num_classes: int):
+    def __init__(self, num_classes: int, lr: float = 0.001, k: int = 20):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.model = ClassificationNet(num_classes, k=20).to(self.device)
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001)
+        self.model = ClassificationNet(num_classes, k=k).to(self.device)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
         self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=20, gamma=0.5)
         super().__init__()
 

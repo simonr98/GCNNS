@@ -11,8 +11,8 @@ class Experiment:
         self.num_epochs = config.get('num_epochs', 200)
         self.algorithm = config.get('algorithm', 'point_net_classification')
         self.project_name = 'GCNNS'
-        self.wandb = config.get('wandb', False)
         self.run_name = config.get('run_name', 'test')
+        self.wandb = config.get('wandb', False)
         self.wandb_config = {}
         self.wandb_logging_parameters = {}
 
@@ -42,8 +42,10 @@ class Experiment:
                 test_acc = algorithm.test(test_loader)
                 print(f'Epoch {epoch:03d}, Loss: {loss:.4f}, Test: {test_acc:.4f}')
                 algorithm.scheduler.step()
-                self.wandb_logging_parameters.update({'loss': loss, 'epochs': epoch, 'test_accuracy': test_acc})
-                wandb.log(self.wandb_logging_parameters)
+
+                if self.wandb:
+                    self.wandb_logging_parameters.update({'loss': loss, 'epochs': epoch, 'test_accuracy': test_acc})
+                    wandb.log(self.wandb_logging_parameters)
 
         if self.algorithm == 'voxel_point_prediction':
             train_loader, test_loader = get_voxel_data_loaders(num_points_pc=NUM_POINTS_POINT_CLOUD,
@@ -56,8 +58,9 @@ class Experiment:
                 print(f'Epoch {epoch:03d}, Loss: {loss:.4f}, Error per sample: {error:.4f}')
                 algorithm.scheduler.step()
 
-                self.wandb_logging_parameters.update({'loss': loss, 'epochs': epoch, 'error': error})
-                wandb.log(self.wandb_logging_parameters)
+                if self.wandb:
+                    self.wandb_logging_parameters.update({'loss': loss, 'epochs': epoch, 'error': error})
+                    wandb.log(self.wandb_logging_parameters)
 
         if self.algorithm == 'torus_com_prediction':
             train_loader, test_loader = get_torus__data_loaders()
@@ -69,5 +72,6 @@ class Experiment:
                 print(f'Epoch {epoch:03d}, Loss: {loss:.4f}, Error per sample: {error:.4f}')
                 algorithm.scheduler.step()
 
-                self.wandb_logging_parameters.update({'loss': loss, 'epochs': epoch, 'error': error})
-                wandb.log(self.wandb_logging_parameters)
+                if self.wandb:
+                    self.wandb_logging_parameters.update({'loss': loss, 'epochs': epoch, 'error': error})
+                    wandb.log(self.wandb_logging_parameters)

@@ -107,8 +107,8 @@ def main(test_mode: bool = False, save: bool = False, file_name: str = 't2.pkl')
         # ###############################################################################
 
         # show average point in simulation
-        p.addUserDebugPoints(np.reshape(average_of_mesh, (1, 3)), [[255, 0, 0]], 5)
-        p.setGravity(0, 0, -10)
+        # p.addUserDebugPoints(np.reshape(average_of_mesh, (1, 3)), [[255, 0, 0]], 5)
+        # p.setGravity(0, 0, -10)
         counter += 1
 
     # pcds, pcds without noise have different lengths - randomly select n points from them

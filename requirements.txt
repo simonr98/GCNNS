@@ -1,6 +1,14 @@
+matplotlib
 python-utils
 wandb
 torch
 torchvision
 torchaudio
 pybullet
+torch-scatter
+torch-sparse
+torch-cluster
+torch-spline-conv
+torch-geometric
+class-resolver
+-f https://data.pyg.org/whl/torch-1.12.0+cu102.html

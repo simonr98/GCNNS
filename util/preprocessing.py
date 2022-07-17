@@ -61,29 +61,20 @@ def get_voxel_data(data: Optional[list], target_ind: int, num_points_point_cloud
 
 @dataclass
 class TorusData:
-    mesh: np.ndarray
     com: np.ndarray
     pcd: np.ndarray
-    pcd_without_noise: np.ndarray
     pos: np.ndarray
 
 
-def get_torus_data(test=False):
-    mesh, com, pcd_without_noise, pcd, pos = [], [], [], [], []
-
+def get_torus_data(test=False, save=False):
     mode = 'test' if test else 'train'
 
-    for filename in os.listdir(f'{ROOT_DIR}/data/torus/{mode}'):
-        with open(f"{ROOT_DIR}/data/torus/train/{filename}", "rb") as input_file:
-            train_data = pickle.load(input_file)
+    with open(f"{ROOT_DIR}/data/torus/{mode}_data.pkl", "rb") as input_file:
+        data = pickle.load(input_file)
 
-        mesh.append(train_data['mesh'])
-        com.append(train_data['com'])
-        pcd.append(train_data['pcd'])
-        pcd_without_noise.append(train_data['pcd_without_noise'])
-        pos.append(train_data['pos'])
+    com, pcd, pos = np.array(data['com']), np.array(data['pcd:']), np.array(data['pos'])
 
-    return TorusData(np.array(mesh), np.array(com), np.array(pcd), np.array(pcd_without_noise), np.array(pos))
+    return TorusData(com, pcd, pos)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -101,7 +92,7 @@ if __name__ == '__main__':
     test_data = False
     test_all_trajectories = False
     test_join_trajectories = False
-    test_torus_data = False
+    test_torus_data = True
 
     train_data = get_train_data_voxel()
     # --------------------------------------------------------------------------------------------------
@@ -147,35 +138,17 @@ if __name__ == '__main__':
     # --------------------------------------------------------------------------------------------------
     # TEST 5 - TEST get_torus_data
     torus_data = get_torus_data()
-    mesh, com, pcd, pcd_without_noise, pos = torus_data.mesh, torus_data.com, torus_data.pcd, \
-                                             torus_data.pcd_without_noise, torus_data.pos
+    com, pcd, pos = torus_data.com, torus_data.pcd, torus_data.pos
 
     if test_torus_data:
-        print(mesh.shape)
         print(com.shape)
         print(pcd.shape)
-        print(pcd_without_noise.shape)
         print(pos.shape)
-
-        # Plot Mesh
-        fig = plt.figure(1, figsize=(100, 100))
-        ax = fig.add_subplot(1, 3, 1, projection='3d')
-        ax.set_title('Mesh Points', {'fontsize': 30})
-        ax.scatter(mesh[0, 0, :, 0], mesh[0, 0, :, 1], mesh[0, 0, :, 2], c='red')
-
-        # --------------------------------------------------------------------------------------------------------
-        # Plot Point Cloud without noise
-        ax = fig.add_subplot(1, 3, 2, projection='3d')
-        ax.set_title('Point cloud without noise', {'fontsize': 30})
-        ax.scatter(pcd_without_noise[0, 0, :, 0], pcd_without_noise[0, 0, :, 1], pcd_without_noise[0, 0, :, 2],
-                   zdir='z', c='red')
-
-        x, y, z = CAMERA_COORDINATES_TORUS[0], CAMERA_COORDINATES_TORUS[1], CAMERA_COORDINATES_TORUS[2]
-        plt.plot([x], [y], [z], marker='o', markersize=10, color="black")
 
         # --------------------------------------------------------------------------------------------------------
         # Plot Point Cloud with noise
-        ax = fig.add_subplot(1, 3, 3, projection='3d')
+        fig = plt.figure(1, figsize=(100, 100))
+        ax = fig.add_subplot(111, projection='3d')
         ax.set_title('Point cloud with noise', {'fontsize': 30})
         ax.scatter(pcd[0, 0, :, 0], pcd[0, 0, :, 1], pcd[0, 0, :, 2], c='red')
 
