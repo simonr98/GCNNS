@@ -17,13 +17,13 @@ def get_environment_plot(camera_coordinates: Optional[list], mesh: np.ndarray,
     # Plot Mesh
     fig = plt.figure(1, figsize=(100, 100))
     ax = fig.add_subplot(1, 3, 1, projection='3d')
-    ax.set_title('Mesh Points', {'fontsize': 30})
+    ax.set_title('Mesh Points', {'fontsize': 20})
     ax.scatter(mesh[:, 0], mesh[:, 1], mesh[:, 2], c='red')
 
     # --------------------------------------------------------------------------------------------------------
     # Plot Point Cloud without noise
     ax = fig.add_subplot(1, 3, 2, projection='3d')
-    ax.set_title('Point cloud without noise', {'fontsize': 30})
+    ax.set_title('Point cloud without noise', {'fontsize': 20})
     ax.scatter(pcd_without_noise[:, 0], pcd_without_noise[:, 1], pcd_without_noise[:, 2], zdir='z', c='red')
 
     x, y, z = camera_coordinates[0], camera_coordinates[1], camera_coordinates[2]
@@ -32,7 +32,7 @@ def get_environment_plot(camera_coordinates: Optional[list], mesh: np.ndarray,
     # --------------------------------------------------------------------------------------------------------
     # Plot Point Cloud with noise
     ax = fig.add_subplot(1, 3, 3, projection='3d')
-    ax.set_title('Point cloud with noise', {'fontsize': 30})
+    ax.set_title('Point cloud with noise', {'fontsize': 20})
     ax.scatter(pcd[:, 0], pcd[:, 1], pcd[:, 2], c='red')
 
     x, y, z = camera_coordinates[0], camera_coordinates[1], camera_coordinates[2]
@@ -43,7 +43,7 @@ def get_environment_plot(camera_coordinates: Optional[list], mesh: np.ndarray,
     plt.show()
 
 
-def main(test_mode: bool = False, save: bool = False, file_name: str = 't1.pkl'):
+def main(test_mode: bool = False, save: bool = False, file_name: str = 't2.pkl'):
     p.connect(p.GUI)
 
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
@@ -131,7 +131,7 @@ def main(test_mode: bool = False, save: bool = False, file_name: str = 't1.pkl')
             'pos': point_on_surface
         }
 
-        with open(f'../data/torus/train/{file_name}', 'wb') as handle:
+        with open(f'../data/torus/test/{file_name}', 'wb') as handle:
             pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
         p.disconnect()
@@ -139,6 +139,6 @@ def main(test_mode: bool = False, save: bool = False, file_name: str = 't1.pkl')
 
 if __name__ == '__main__':
     test_mode = True
-    save, file_name = True, 't2.pkl'
+    save, file_name = False, 't5.pkl'
 
     main(test_mode=test_mode, save=save, file_name=file_name)
