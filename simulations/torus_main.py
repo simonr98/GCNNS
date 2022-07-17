@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pickle
 from numpy.random import default_rng
 from typing import Optional
-from definitions import INDEX_TRACK_POINT_TORUS, TRAJECTORY_LENGTH_TORUS
+from definitions import INDEX_TRACK_POINT_TORUS, TRAJECTORY_LENGTH_TORUS, CAMERA_COORDINATES_TORUS
 
 
 def distance(a, b):
@@ -17,13 +17,13 @@ def get_environment_plot(camera_coordinates: Optional[list], mesh: np.ndarray,
     # Plot Mesh
     fig = plt.figure(1, figsize=(100, 100))
     ax = fig.add_subplot(1, 3, 1, projection='3d')
-    ax.title.set_text('Point cloud without noise')
+    ax.set_title('Mesh Points', {'fontsize': 30})
     ax.scatter(mesh[:, 0], mesh[:, 1], mesh[:, 2], c='red')
 
     # --------------------------------------------------------------------------------------------------------
     # Plot Point Cloud without noise
     ax = fig.add_subplot(1, 3, 2, projection='3d')
-    ax.title.set_text('Point cloud without noise')
+    ax.set_title('Point cloud without noise', {'fontsize': 30})
     ax.scatter(pcd_without_noise[:, 0], pcd_without_noise[:, 1], pcd_without_noise[:, 2], zdir='z', c='red')
 
     x, y, z = camera_coordinates[0], camera_coordinates[1], camera_coordinates[2]
@@ -32,7 +32,7 @@ def get_environment_plot(camera_coordinates: Optional[list], mesh: np.ndarray,
     # --------------------------------------------------------------------------------------------------------
     # Plot Point Cloud with noise
     ax = fig.add_subplot(1, 3, 3, projection='3d')
-    ax.title.set_text('Point cloud with noise')
+    ax.set_title('Point cloud with noise', {'fontsize': 30})
     ax.scatter(pcd[:, 0], pcd[:, 1], pcd[:, 2], c='red')
 
     x, y, z = camera_coordinates[0], camera_coordinates[1], camera_coordinates[2]
@@ -46,11 +46,9 @@ def get_environment_plot(camera_coordinates: Optional[list], mesh: np.ndarray,
 def main(test_mode: bool = False, save: bool = False, file_name: str = 't1.pkl'):
     p.connect(p.GUI)
 
-    camera_coordinates = [0.3, 0.9, -1]
-
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
     p.resetSimulation(p.RESET_USE_DEFORMABLE_WORLD)
-    p.resetDebugVisualizerCamera(3, -420, -30, camera_coordinates)
+    p.resetDebugVisualizerCamera(3, -420, -30, CAMERA_COORDINATES_TORUS)
     p.setGravity(0, 0, -10)
 
     tex = p.loadTexture("uvmap.png")
@@ -82,7 +80,7 @@ def main(test_mode: bool = False, save: bool = False, file_name: str = 't1.pkl')
         # Sample a approximation of a point cloud from a set of mesh points
 
         # Compute the distance of all points to the Camera and take only the lower 30 percent quantile
-        distance_to_camera = np.apply_along_axis(distance, 1, mesh, np.array(camera_coordinates))
+        distance_to_camera = np.apply_along_axis(distance, 1, mesh, np.array(CAMERA_COORDINATES_TORUS))
         quantile = np.quantile(distance_to_camera, [0.3], axis=0)[0]
         pcd_without_noise = np.delete(mesh, np.where(distance_to_camera > quantile)[0], 0)
 
@@ -104,7 +102,7 @@ def main(test_mode: bool = False, save: bool = False, file_name: str = 't1.pkl')
         # TEST
         ###############################################################################
         if test_mode:
-            get_environment_plot(camera_coordinates, mesh, pcd_without_noise, pcd)
+            get_environment_plot(CAMERA_COORDINATES_TORUS, mesh, pcd_without_noise, pcd)
             exit()
         # ###############################################################################
 
@@ -140,7 +138,7 @@ def main(test_mode: bool = False, save: bool = False, file_name: str = 't1.pkl')
 
 
 if __name__ == '__main__':
-    test_mode = False
+    test_mode = True
     save, file_name = True, 't2.pkl'
 
     main(test_mode=test_mode, save=save, file_name=file_name)

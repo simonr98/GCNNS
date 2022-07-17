@@ -30,7 +30,7 @@ repetitions: 1   # repeat 8 times
 
 # Experiment Parameters
 params:
-  algorithm: 'else'
+  algorithm: 'torus_com_prediction' # voxel_point_prediction
   num_epochs: 200
   track_point_index: 67
 

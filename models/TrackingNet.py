@@ -17,13 +17,7 @@ class TrackingNet(torch.nn.Module):
         self.mlp = MLP([1024, 512, 256, out_channels], dropout=0.5)
 
     def forward(self, data):
-        f_size = data.shape[0]*data.shape[1]
-
-        batch = [[i] * data.shape[1] for i in range(len(data))]
-        batch = [e for sub_list in batch for e in sub_list]
-        batch = torch.LongTensor(batch).to(self.device)
-
-        data = torch.reshape(data, (f_size, data.shape[2]))
+        data, batch = data.data, data.batch
 
         x1 = self.conv1(data, batch)
         x2 = self.conv2(x1, batch)

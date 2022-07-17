@@ -1,12 +1,14 @@
 import os
-
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
-from definitions import ROOT_DIR, INDEX_TRACK_POINT_VOXEL, INDEX_TRAJECTORY
+from definitions import ROOT_DIR, INDEX_TRACK_POINT_VOXEL, INDEX_TRAJECTORY_VOXEL, CAMERA_COORDINATES_TORUS
 from typing import Optional
 
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Voxel Data Processing
 
 @dataclass
 class VoxelData:
@@ -15,26 +17,13 @@ class VoxelData:
     y: np.ndarray
 
 
-@dataclass
-class TorusData:
-    mesh: np.ndarray
-    com: np.ndarray
-    pcd: np.ndarray
-    pcd_without_noise: np.ndarray
-    pos: np.ndarray
-
-
-def get_train_data(torus: bool = False):
-    if torus:
-        with open(f"{ROOT_DIR}/data/torus/train/t1.pkl", "rb") as input_file:
-            train_data = pickle.load(input_file)
-    else:
-        with open(f"{ROOT_DIR}/data/voxel/coarse_60steps_voxel_color_train.pkl", "rb") as input_file:
-            train_data = pickle.load(input_file)
+def get_train_data_voxel():
+    with open(f"{ROOT_DIR}/data/voxel/coarse_60steps_voxel_color_train.pkl", "rb") as input_file:
+        train_data = pickle.load(input_file)
     return train_data
 
 
-def get_test_data(torus: bool = False):
+def get_test_data_voxel():
     with open(f"{ROOT_DIR}/data/voxel/coarse_60steps_voxel_color_test.pkl", "rb") as input_file:
         test_data = pickle.load(input_file)
     return test_data
@@ -65,10 +54,26 @@ def get_voxel_data(data: Optional[list], target_ind: int, num_points_point_cloud
     return VoxelData(np.array(nodes), np.array(pcd), np.array(y))
 
 
-def get_torus_data():
+# ---------------------------------------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Torus data processing
+
+@dataclass
+class TorusData:
+    mesh: np.ndarray
+    com: np.ndarray
+    pcd: np.ndarray
+    pcd_without_noise: np.ndarray
+    pos: np.ndarray
+
+
+def get_torus_data(test=False):
     mesh, com, pcd_without_noise, pcd, pos = [], [], [], [], []
 
-    for filename in os.listdir(f'{ROOT_DIR}/data/torus/train'):
+    mode = 'test' if test else 'train'
+
+    for filename in os.listdir(f'{ROOT_DIR}/data/torus/{mode}'):
         with open(f"{ROOT_DIR}/data/torus/train/{filename}", "rb") as input_file:
             train_data = pickle.load(input_file)
 
@@ -81,12 +86,14 @@ def get_torus_data():
     return TorusData(np.array(mesh), np.array(com), np.array(pcd), np.array(pcd_without_noise), np.array(pos))
 
 
+# ---------------------------------------------------------------------------------------------------------------------
+
 def join_trajectories(data):
     return np.vstack([data[i] for i in range(len(data))])
 
 
 ##########################################################################################################
-# TEST
+# TESTS
 ##########################################################################################################
 
 if __name__ == '__main__':
@@ -94,9 +101,9 @@ if __name__ == '__main__':
     test_data = False
     test_all_trajectories = False
     test_join_trajectories = False
-    test_torus_data = True
+    test_torus_data = False
 
-    train_data = get_train_data(torus=False)
+    train_data = get_train_data_voxel()
     # --------------------------------------------------------------------------------------------------
     # TEST 1 - TEST THE DATA - Points can move but cannot jump
     if test_data:
@@ -109,7 +116,7 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------
     # TEST 2 - TEST get_one_trajectory - nodes should be consistent
-    voxel_data = get_one_voxel_trajectory(train_data, INDEX_TRAJECTORY, INDEX_TRACK_POINT_VOXEL)
+    voxel_data = get_one_voxel_trajectory(train_data, INDEX_TRAJECTORY_VOXEL, INDEX_TRACK_POINT_VOXEL)
     nodes = voxel_data.nodes
 
     if test_one_trajectory:
@@ -150,3 +157,33 @@ if __name__ == '__main__':
         print(pcd_without_noise.shape)
         print(pos.shape)
 
+        # Plot Mesh
+        fig = plt.figure(1, figsize=(100, 100))
+        ax = fig.add_subplot(1, 3, 1, projection='3d')
+        ax.set_title('Mesh Points', {'fontsize': 30})
+        ax.scatter(mesh[0, 0, :, 0], mesh[0, 0, :, 1], mesh[0, 0, :, 2], c='red')
+
+        # --------------------------------------------------------------------------------------------------------
+        # Plot Point Cloud without noise
+        ax = fig.add_subplot(1, 3, 2, projection='3d')
+        ax.set_title('Point cloud without noise', {'fontsize': 30})
+        ax.scatter(pcd_without_noise[0, 0, :, 0], pcd_without_noise[0, 0, :, 1], pcd_without_noise[0, 0, :, 2],
+                   zdir='z', c='red')
+
+        x, y, z = CAMERA_COORDINATES_TORUS[0], CAMERA_COORDINATES_TORUS[1], CAMERA_COORDINATES_TORUS[2]
+        plt.plot([x], [y], [z], marker='o', markersize=10, color="black")
+
+        # --------------------------------------------------------------------------------------------------------
+        # Plot Point Cloud with noise
+        ax = fig.add_subplot(1, 3, 3, projection='3d')
+        ax.set_title('Point cloud with noise', {'fontsize': 30})
+        ax.scatter(pcd[0, 0, :, 0], pcd[0, 0, :, 1], pcd[0, 0, :, 2], c='red')
+
+        x, y, z = CAMERA_COORDINATES_TORUS[0], CAMERA_COORDINATES_TORUS[1], CAMERA_COORDINATES_TORUS[2]
+        plt.plot([x], [y], [z], marker='o', markersize=10, color="black")
+        # ----------------------------------------------------------------------------------------------------------
+
+        plt.subplots_adjust()
+        plt.show()
+
+##########################################################################################################

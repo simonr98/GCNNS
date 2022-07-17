@@ -6,7 +6,7 @@ from definitions import INDEX_TRACK_POINT_VOXEL, NUM_POINTS_POINT_CLOUD
 from util.preprocessing import *
 
 
-class VoxelDataset(Dataset):
+class CustomDataset(Dataset):
     def __init__(self, data, targets):
         self.data = T.from_numpy(data).float()
         self.targets = T.LongTensor(targets)
@@ -25,11 +25,11 @@ class VoxelDataset(Dataset):
 # TEST
 ##########################################################################################################
 if __name__ == '__main__':
-    voxel_train_data = get_voxel_data(get_train_data(), INDEX_TRACK_POINT_VOXEL, NUM_POINTS_POINT_CLOUD)
+    voxel_train_data = get_voxel_data(get_train_data_voxel(), INDEX_TRACK_POINT_VOXEL, NUM_POINTS_POINT_CLOUD)
     nodes, pcd, target = voxel_train_data.nodes, voxel_train_data.pcd, voxel_train_data.y
 
     nodes, pcd, target = join_trajectories(nodes), join_trajectories(pcd), join_trajectories(target)
-    dataset = VoxelDataset(data=pcd, targets=target)
+    dataset = CustomDataset(data=pcd, targets=target)
 
     #####################
     # plot point of interest over time
