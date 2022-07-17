@@ -8,8 +8,14 @@ class Algorithm(ABC):
 
     @abstractmethod
     def train(self, train_loader):
-        return None
+        """
+            ...
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def test(self, test_loader):
-        return None
+        """
+                    ...
+        """
+        raise NotImplementedError

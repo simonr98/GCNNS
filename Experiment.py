@@ -1,8 +1,8 @@
+import wandb
 from algorithms.ClassificationAlgorithm import ClassificationAlgorithm
 from definitions import *
 from util.get_data import get_model_net_data, get_voxel_data_loaders, get_torus__data_loaders
 from algorithms.PointTrackingAlgorithm import PointTrackingAlgorithm
-from util.preprocessing import get_torus_data
 
 
 class Experiment:
@@ -10,8 +10,28 @@ class Experiment:
         self.track_point_index = config.get('track_point_index', 67)
         self.num_epochs = config.get('num_epochs', 200)
         self.algorithm = config.get('algorithm', 'point_net_classification')
+        self.project_name = 'GCNNS'
+        self.wandb = config.get('wandb', False)
+        self.run_name = config.get('run_name', 'test')
+        self.wandb_config = {}
+        self.wandb_logging_parameters = {}
+
+    def setup_wandb(self):
+        self.wandb_config.update({
+            'project_name': self.project_name,
+            'run_name': self.run_name,
+        })
 
     def run_experiment(self):
+        if self.wandb:
+            self.setup_wandb()
+            wandb.init(project=self.wandb_config['project_name'],
+                       config=self.wandb_config,
+                       name=self.wandb_config['run_name'],
+                       entity="simonr98",
+                       reinit=True,
+                       settings=wandb.Settings(start_method="thread"))
+
         if self.algorithm == 'point_net_classification':
             train_loader, test_loader = get_model_net_data(num_points_pc=NUM_POINTS_POINT_CLOUD,
                                                            batch_size=BATCH_SIZE_VOXEL)
@@ -22,6 +42,8 @@ class Experiment:
                 test_acc = algorithm.test(test_loader)
                 print(f'Epoch {epoch:03d}, Loss: {loss:.4f}, Test: {test_acc:.4f}')
                 algorithm.scheduler.step()
+                self.wandb_logging_parameters.update({'loss': loss, 'epochs': epoch, 'test_accuracy': test_acc})
+                wandb.log(self.wandb_logging_parameters)
 
         if self.algorithm == 'voxel_point_prediction':
             train_loader, test_loader = get_voxel_data_loaders(num_points_pc=NUM_POINTS_POINT_CLOUD,
@@ -34,6 +56,9 @@ class Experiment:
                 print(f'Epoch {epoch:03d}, Loss: {loss:.4f}, Error per sample: {error:.4f}')
                 algorithm.scheduler.step()
 
+                self.wandb_logging_parameters.update({'loss': loss, 'epochs': epoch, 'error': error})
+                wandb.log(self.wandb_logging_parameters)
+
         if self.algorithm == 'torus_com_prediction':
             train_loader, test_loader = get_torus__data_loaders()
             algorithm = PointTrackingAlgorithm(point_dim=3, out_channels=3)
@@ -43,3 +68,6 @@ class Experiment:
                 error = algorithm.test(test_loader)
                 print(f'Epoch {epoch:03d}, Loss: {loss:.4f}, Error per sample: {error:.4f}')
                 algorithm.scheduler.step()
+
+                self.wandb_logging_parameters.update({'loss': loss, 'epochs': epoch, 'error': error})
+                wandb.log(self.wandb_logging_parameters)

@@ -1,1 +1,6 @@
 python-utils
+wandb
+torch
+torchvision
+torchaudio
+pybullet
