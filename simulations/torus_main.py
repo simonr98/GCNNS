@@ -138,7 +138,7 @@ def main(test_mode: bool = False, save: bool = False, file_name: str = 't2.pkl')
 
 
 if __name__ == '__main__':
-    test_mode = True
+    test_mode = False
     save, file_name = False, 't5.pkl'
 
     main(test_mode=test_mode, save=save, file_name=file_name)

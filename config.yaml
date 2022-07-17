@@ -21,8 +21,6 @@ repetitions: 1  # number of times one set of parameters is run
 params:
   # this is where you specify all parameters needed for your experiment.MUST BE DEFAULT
   path: "output"   # location to save results in
-  track_point_index: 67
-
 
 ---
 name: "ModelNetClassification"
@@ -32,9 +30,11 @@ repetitions: 1   # repeat 8 times
 # Experiment Parameters
 params:
   algorithm: 'torus_com_prediction' # voxel_point_prediction
-  run_name: 'torus_test'
-  wandb: False
-  num_epochs: 200
+  run_name: 'torus_com_prediction'
+  save: True
+  wandb: True
+  num_epochs: 10
+  lr: 0.001
 
 #---
 #name: "EXP1"

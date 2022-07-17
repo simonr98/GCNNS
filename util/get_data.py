@@ -17,7 +17,6 @@ def get_model_net_data(num_points_pc: int, batch_size: int):
 
     train_dataset = ModelNet(path, '10', True, transform, pre_transform)
     test_dataset = ModelNet(path, '10', False, transform, pre_transform)
-
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=6)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=6)
 
@@ -44,19 +43,29 @@ def get_voxel_data_loaders(num_points_pc: int, track_point_index: int):
     return train_loader, test_loader
 
 
-def get_torus__data_loaders():
+def get_torus_data_loaders(com: bool = True):
     train_data, test_data = get_torus_data(test=False), get_torus_data(test=True)
 
-    pcd_train, y_train = train_data.pcd, train_data.com
-    pcd_train, y_train = join_trajectories(pcd_train), join_trajectories(y_train)
+    if com:
+        y_train, y_test = train_data.com, test_data.com
+    else:
+        y_train, y_test = train_data.pos, test_data.pos
 
-    pcd_test, y_test = test_data.pcd, test_data.com
+    pcd_train, pcd_test = train_data.pcd, test_data.pcd
+
+    pcd_train, y_train = join_trajectories(pcd_train), join_trajectories(y_train)
     pcd_test, y_test = join_trajectories(pcd_test), join_trajectories(y_test)
 
     train_dataset = CustomDataset(data=pcd_train, targets=y_train)
     test_dataset = CustomDataset(data=pcd_test, targets=y_test)
 
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=False, num_workers=6)
-    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False, num_workers=6)
+    train_loader = DataLoader(train_dataset, batch_size=5, shuffle=False, num_workers=6)
+    test_loader = DataLoader(test_dataset, batch_size=5, shuffle=False, num_workers=6)
 
     return train_loader, test_loader
+
+if __name__ == '__main__':
+    train_loader, test_loader = get_model_net_data(num_points_pc=480, batch_size=32)
+
+    for data in train_loader:
+        print(data.pos.shape)

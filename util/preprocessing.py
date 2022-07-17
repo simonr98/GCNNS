@@ -66,13 +66,18 @@ class TorusData:
     pos: np.ndarray
 
 
-def get_torus_data(test=False, save=False):
+def get_torus_data(test=False):
     mode = 'test' if test else 'train'
 
     with open(f"{ROOT_DIR}/data/torus/{mode}_data.pkl", "rb") as input_file:
         data = pickle.load(input_file)
 
     com, pcd, pos = np.array(data['com']), np.array(data['pcd:']), np.array(data['pos'])
+
+    # Only take t trajectories for training and 2 for testing (as each pc has ~900 points)
+    i = 6 if mode == 'train' else 2
+
+    com, pcd, pos = com[:i, :, :], pcd[:i, :, :, :], pos[:i, :, :]
 
     return TorusData(com, pcd, pos)
 
