@@ -125,7 +125,7 @@ params:
   save: False
   wandb: True
   num_epochs: 25
-  lr: 0.0005
+  lr: 0.001
 
 #---
 #name: "EXP1"

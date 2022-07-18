@@ -74,7 +74,7 @@ class Experiment:
 
         def run_torus_algorithm(com: bool):
             train_loader, test_loader = get_torus_data_loaders(com=com, key=self.input)
-            algorithm = PointTrackingAlgorithm(point_dim=3, out_channels=3)
+            algorithm = PointTrackingAlgorithm(point_dim=3, out_channels=3, lr=self.lr)
 
             for epoch in range(1, self.num_epochs + 1):
                 loss = algorithm.train(train_loader)
