@@ -62,24 +62,19 @@ def get_voxel_data(data: Optional[list], target_ind: int, num_points_point_cloud
 @dataclass
 class TorusData:
     com: np.ndarray
-    pcd: np.ndarray
+    input: np.ndarray
     pos: np.ndarray
 
 
-def get_torus_data(test=False):
+def get_torus_data(test: object = False, key='pcd') -> object:
     mode = 'test' if test else 'train'
 
-    with open(f"{ROOT_DIR}/data/torus/{mode}_data.pkl", "rb") as input_file:
+    with open(f"{ROOT_DIR}/data/torus/{key}_{mode}_data.pkl", "rb") as input_file:
         data = pickle.load(input_file)
 
-    com, pcd, pos = np.array(data['com']), np.array(data['pcd:']), np.array(data['pos'])
+    com, input, pos = np.array(data['com']), np.array(data[key]), np.array(data['pos'])
 
-    # Only take t trajectories for training and 2 for testing (as each pc has ~900 points)
-    i = 6 if mode == 'train' else 2
-
-    com, pcd, pos = com[:i, :, :], pcd[:i, :, :, :], pos[:i, :, :]
-
-    return TorusData(com, pcd, pos)
+    return TorusData(com, input, pos)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -142,12 +137,12 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------
     # TEST 5 - TEST get_torus_data
-    torus_data = get_torus_data()
-    com, pcd, pos = torus_data.com, torus_data.pcd, torus_data.pos
+    torus_data = get_torus_data(key='pcd_without_noise')
+    com, input, pos = torus_data.com, torus_data.input, torus_data.pos
 
     if test_torus_data:
         print(com.shape)
-        print(pcd.shape)
+        print(input.shape)
         print(pos.shape)
 
         # --------------------------------------------------------------------------------------------------------
@@ -155,7 +150,7 @@ if __name__ == '__main__':
         fig = plt.figure(1, figsize=(100, 100))
         ax = fig.add_subplot(111, projection='3d')
         ax.set_title('Point cloud with noise', {'fontsize': 30})
-        ax.scatter(pcd[0, 0, :, 0], pcd[0, 0, :, 1], pcd[0, 0, :, 2], c='red')
+        ax.scatter(input[0, 0, :, 0], input[0, 0, :, 1], input[0, 0, :, 2], c='red')
 
         x, y, z = CAMERA_COORDINATES_TORUS[0], CAMERA_COORDINATES_TORUS[1], CAMERA_COORDINATES_TORUS[2]
         plt.plot([x], [y], [z], marker='o', markersize=10, color="black")

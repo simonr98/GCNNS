@@ -14,6 +14,7 @@ class Experiment:
         self.save = config.get('save', False)
         self.lr = config.get('lr', 0.001)
         self.project_name = 'GCNNS'
+        self.input = config.get('input', 'pcd')
         self.model_save_path = config.get('model_save_path', f'models/{self.algorithm}')
         self.run_name = config.get('run_name', 'test')
         self.wandb = config.get('wandb', False)
@@ -72,7 +73,7 @@ class Experiment:
                     wandb.log(self.wandb_logging_parameters)
 
         def run_torus_algorithm(com: bool):
-            train_loader, test_loader = get_torus_data_loaders(com=com)
+            train_loader, test_loader = get_torus_data_loaders(com=com, key=self.input)
             algorithm = PointTrackingAlgorithm(point_dim=3, out_channels=3)
 
             for epoch in range(1, self.num_epochs + 1):

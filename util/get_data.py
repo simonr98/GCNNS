@@ -43,26 +43,27 @@ def get_voxel_data_loaders(num_points_pc: int, track_point_index: int):
     return train_loader, test_loader
 
 
-def get_torus_data_loaders(com: bool = True):
-    train_data, test_data = get_torus_data(test=False), get_torus_data(test=True)
+def get_torus_data_loaders(com: bool = True, key ='pcd'):
+    train_data, test_data = get_torus_data(test=False, key=key), get_torus_data(test=True, key=key)
 
     if com:
         y_train, y_test = train_data.com, test_data.com
     else:
         y_train, y_test = train_data.pos, test_data.pos
 
-    pcd_train, pcd_test = train_data.pcd, test_data.pcd
+    input_train, input_test = train_data.input, test_data.input
 
-    pcd_train, y_train = join_trajectories(pcd_train), join_trajectories(y_train)
-    pcd_test, y_test = join_trajectories(pcd_test), join_trajectories(y_test)
+    input_train, y_train = join_trajectories(input_train), join_trajectories(y_train)
+    input_test, y_test = join_trajectories(input_test), join_trajectories(y_test)
 
-    train_dataset = CustomDataset(data=pcd_train, targets=y_train)
-    test_dataset = CustomDataset(data=pcd_test, targets=y_test)
+    train_dataset = CustomDataset(data=input_train, targets=y_train)
+    test_dataset = CustomDataset(data=input_test, targets=y_test)
 
     train_loader = DataLoader(train_dataset, batch_size=5, shuffle=False, num_workers=6)
     test_loader = DataLoader(test_dataset, batch_size=5, shuffle=False, num_workers=6)
 
     return train_loader, test_loader
+
 
 if __name__ == '__main__':
     train_loader, test_loader = get_model_net_data(num_points_pc=480, batch_size=32)

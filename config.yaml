@@ -30,11 +30,102 @@ repetitions: 1   # repeat 8 times
 # Experiment Parameters
 params:
   algorithm: 'torus_com_prediction' # voxel_point_prediction
-  run_name: 'torus_com_prediction'
+  run_name: 'torus_com_prediction_mesh'
+  input: 'mesh'
   save: True
   wandb: True
+  num_epochs: 25
+  lr: 0.001
+
+---
+name: "ModelNetClassification"
+path: "output"
+repetitions: 1   # repeat 8 times
+
+# Experiment Parameters
+params:
+  algorithm: 'torus_pos_prediction' # voxel_point_prediction
+  run_name: 'torus_pos_prediction_mesh'
+  input: 'mesh'
+  save: False
+  wandb: True
+  num_epochs: 25
+  lr: 0.001
+
+---
+name: "ModelNetClassification"
+path: "output"
+repetitions: 1   # repeat 8 times
+
+# Experiment Parameters
+params:
+  algorithm: 'torus_com_prediction' # voxel_point_prediction
+  run_name: 'torus_com_prediction_pcd'
+  input: 'pcd'
+  save: False
+  wandb: True
+  num_epochs: 20
+  lr: 0.001
+
+---
+name: "ModelNetClassification"
+path: "output"
+repetitions: 1   # repeat 8 times
+
+# Experiment Parameters
+params:
+  algorithm: 'torus_com_prediction' # voxel_point_prediction
+  run_name: 'torus_com_prediction_pcd_without_noise'
+  input: 'pcd_without_noise'
+  save: False
+  wandb: False
   num_epochs: 10
   lr: 0.001
+
+---
+name: "ModelNetClassification"
+path: "output"
+repetitions: 1   # repeat 8 times
+
+# Experiment Parameters
+params:
+  algorithm: 'torus_pos_prediction' # voxel_point_prediction
+  run_name: 'torus_pos_prediction_mesh'
+  input: 'mesh'
+  save: False
+  wandb: True
+  num_epochs: 25
+  lr: 0.0005
+
+---
+name: "ModelNetClassification"
+path: "output"
+repetitions: 1   # repeat 8 times
+
+# Experiment Parameters
+params:
+  algorithm: 'torus_pos_prediction' # voxel_point_prediction
+  run_name: 'torus_pos_prediction_pcd_without_noise'
+  input: 'pcd_without_noise'
+  save: False
+  wandb: True
+  num_epochs: 25
+  lr: 0.0005
+
+---
+name: "ModelNetClassification"
+path: "output"
+repetitions: 1   # repeat 8 times
+
+# Experiment Parameters
+params:
+  algorithm: 'torus_pos_prediction' # voxel_point_prediction
+  run_name: 'torus_pos_prediction_pcd'
+  input: 'pcd'
+  save: False
+  wandb: True
+  num_epochs: 25
+  lr: 0.0005
 
 #---
 #name: "EXP1"
