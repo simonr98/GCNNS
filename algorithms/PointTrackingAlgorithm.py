@@ -59,12 +59,12 @@ class PointTrackingAlgorithm(Algorithm):
         self.model.eval()
 
         error = 0
-        for pcd, y in test_loader:
-            pcd = pcd.to(self.device)
+        for input_data, y in test_loader:
+            input_data = input_data.to(self.device)
             y = y.to(self.device)
 
             with torch.no_grad():
-                data = self.prepare_data_for_model(pcd)
+                data = self.prepare_data_for_model(input_data)
                 pred = self.model(data)
 
             error += abs(pred - y).sum().item() / len(test_loader.dataset)

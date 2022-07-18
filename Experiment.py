@@ -93,6 +93,3 @@ class Experiment:
 
         if self.algorithm == 'torus_pos_prediction':
             run_torus_algorithm(com=False)
-
-        else:
-            print('Algorithm not implemented')
