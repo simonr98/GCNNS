@@ -50,7 +50,7 @@ class PointTrackingAlgorithm(Algorithm):
 
             loss.backward()
 
-            total_loss += loss.item() * train_loader.batch_size
+            total_loss += loss.item()
             self.optimizer.step()
 
         return total_loss / len(train_loader.dataset)
