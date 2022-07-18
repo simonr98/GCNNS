@@ -9,7 +9,7 @@ from util.preprocessing import *
 class CustomDataset(Dataset):
     def __init__(self, data, targets):
         self.data = T.from_numpy(data).float()
-        self.targets = T.LongTensor(targets)
+        self.targets = T.FloatTensor(targets)
 
     def __getitem__(self, index):
         x = self.data[index]

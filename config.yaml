@@ -32,7 +32,7 @@ params:
   algorithm: 'torus_com_prediction' # voxel_point_prediction
   run_name: 'torus_com_prediction_mesh'
   input: 'mesh'
-  save: True
+  save: False
   wandb: True
   num_epochs: 25
   lr: 0.001
