@@ -22,50 +22,50 @@ params:
   # this is where you specify all parameters needed for your experiment.MUST BE DEFAULT
   path: "output"   # location to save results in
 
----
-name: "DGCNN_PCD_COM"
-path: "output"
-repetitions: 1   # repeat 8 times
-
-# Experiment Parameters
-params:
-  algorithm: 'torus_com_prediction' # voxel_point_prediction
-  run_name: 'pcd_com_prediction'
-  input: 'pcd'
-  save: True
-  wandb: True
-  num_epochs: 50
-  lr: 0.0001
-
----
-name: "DGCNN_PCD_WITHOUT_NOISE_COM"
-path: "output"
-repetitions: 1   # repeat 8 times
-
-# Experiment Parameters
-params:
-  algorithm: 'torus_com_prediction' # voxel_point_prediction
-  run_name: 'pcd_without_noise_com_prediction'
-  input: 'pcd_without_noise'
-  save: True
-  wandb: True
-  num_epochs: 50
-  lr: 0.0001
-
----
-name: "DGCNN_PCD_WITHOUT_NOISE_COM"
-path: "output"
-repetitions: 1   # repeat 8 times
-
-# Experiment Parameters
-params:
-  algorithm: 'torus_com_prediction' # voxel_point_prediction
-  run_name: 'pcd_without_noise_com_prediction'
-  input: 'pcd_without_noise'
-  save: True
-  wandb: True
-  num_epochs: 50
-  lr: 0.0001
+#---
+#name: "DGCNN_PCD_COM"
+#path: "output"
+#repetitions: 1   # repeat 8 times
+#
+## Experiment Parameters
+#params:
+#  algorithm: 'torus_com_prediction' # voxel_point_prediction
+#  run_name: 'pcd_com_prediction'
+#  input: 'pcd'
+#  save: True
+#  wandb: True
+#  num_epochs: 50
+#  lr: 0.0001
+#
+#---
+#name: "DGCNN_PCD_WITHOUT_NOISE_COM"
+#path: "output"
+#repetitions: 1   # repeat 8 times
+#
+## Experiment Parameters
+#params:
+#  algorithm: 'torus_com_prediction' # voxel_point_prediction
+#  run_name: 'pcd_without_noise_com_prediction'
+#  input: 'pcd_without_noise'
+#  save: True
+#  wandb: True
+#  num_epochs: 50
+#  lr: 0.0001
+#
+#---
+#name: "DGCNN_PCD_WITHOUT_NOISE_COM"
+#path: "output"
+#repetitions: 1   # repeat 8 times
+#
+## Experiment Parameters
+#params:
+#  algorithm: 'torus_com_prediction' # voxel_point_prediction
+#  run_name: 'pcd_without_noise_com_prediction'
+#  input: 'pcd_without_noise'
+#  save: True
+#  wandb: True
+#  num_epochs: 50
+#  lr: 0.0001
 
 ---
 name: "DGCNN_MESH_COM"
@@ -75,11 +75,11 @@ repetitions: 1   # repeat 8 times
 # Experiment Parameters
 params:
   algorithm: 'torus_com_prediction' # voxel_point_prediction
-  run_name: 'mesh_com_prediction'
+  run_name: 'NEW_TEST'
   input: 'mesh'
   save: True
   wandb: True
-  num_epochs: 50
+  num_epochs: 40
   lr: 0.0001
 
 

@@ -16,7 +16,7 @@ class Experiment:
         self.lr = config.get('lr', 0.001)
         self.project_name = 'GCNNS_NEW'
         self.input = config.get('input', 'pcd')
-        self.model_save_path = config.get('model_save_path', f'output/saved_models/{self.algorithm}_{self.input}')
+        self.model_save_path = config.get('model_save_path', f'models/saved_models/{self.algorithm}_{self.input}')
         self.run_name = config.get('run_name', 'test')
         self.wandb = config.get('wandb', False)
         self.wandb_config = {}

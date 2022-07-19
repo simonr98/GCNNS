@@ -14,7 +14,7 @@ class Data:
 
 
 class PointTrackingAlgorithm(Algorithm):
-    def __init__(self, point_dim=2, out_channels=2, lr=0.001):
+    def __init__(self, point_dim=3, out_channels=2, lr=0.001):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model = TrackingNet(out_channels=out_channels, k=20, point_dim=point_dim).to(self.device)
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
