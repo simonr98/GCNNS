@@ -21,5 +21,4 @@ class TrackingNet(torch.nn.Module):
         x2 = self.conv2(x1, batch)
         out = self.lin1(torch.cat([x1, x2], dim=1))
         out = global_max_pool(out, batch)
-        out = self.mlp(out)
-        return F.softmax(out, dim=1)
+        return self.mlp(out)
