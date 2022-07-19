@@ -46,7 +46,7 @@ def get_model_net_data(num_points_pc: int, batch_size: int):
 #     return train_loader, test_loader
 
 
-def get_torus_data_loaders(com: bool = True, key='pcd'):
+def get_torus_data_loaders(com: bool = True, key='pcd', batch_size=BATCH_SIZE_TORUS):
     train_data, test_data = get_torus_data(test=False, key=key), get_torus_data(test=True, key=key)
 
     if com:
@@ -68,8 +68,8 @@ def get_torus_data_loaders(com: bool = True, key='pcd'):
     train_dlist = [Data(pos=a, y=b) for a, b in zip(input_train, y_train)]
     test_dlist = [Data(pos=a, y=b) for a, b in zip(input_test, y_test)]
 
-    train_loader = DataLoader(train_dlist, batch_size=BATCH_SIZE_TORUS, shuffle=True)
-    test_loader = DataLoader(test_dlist, batch_size=BATCH_SIZE_TORUS, shuffle=False)
+    train_loader = DataLoader(train_dlist, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_dlist, batch_size=batch_size, shuffle=False)
 
     return train_loader, test_loader
 

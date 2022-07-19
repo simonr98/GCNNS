@@ -2,7 +2,7 @@ import wandb
 import torch as T
 from algorithms.ClassificationAlgorithm import ClassificationAlgorithm
 from definitions import *
-from util.get_data import get_model_net_data, get_voxel_data_loaders, get_torus_data_loaders
+from util.get_data import get_model_net_data, get_torus_data_loaders
 from algorithms.PointTrackingAlgorithm import PointTrackingAlgorithm
 
 

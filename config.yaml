@@ -74,8 +74,8 @@ repetitions: 1   # repeat 8 times
 
 # Experiment Parameters
 params:
-  algorithm: 'torus_com_prediction' # voxel_point_prediction
-  run_name: 'NEW_TEST'
+  algorithm: 'torus_pos_prediction' # voxel_point_prediction
+  run_name: 'MESH_POS_PREDICTION'
   input: 'mesh'
   save: True
   wandb: True

@@ -28,6 +28,13 @@ def get_test_data_voxel():
         test_data = pickle.load(input_file)
     return test_data
 
+
+# ---------------------------------------------------------------------------------------------------------------------
+
+def join_trajectories(data):
+    return np.vstack([data[i] for i in range(len(data))])
+
+
 def plot_voxel_trajectory():
     voxel_train_data = get_voxel_data(get_train_data_voxel(), INDEX_TRACK_POINT_VOXEL, NUM_POINTS_POINT_CLOUD)
     nodes, pcd, target = voxel_train_data.nodes, voxel_train_data.pcd, voxel_train_data.y
@@ -104,9 +111,6 @@ def get_torus_data(test: object = False, key='pcd') -> object:
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-
-def join_trajectories(data):
-    return np.vstack([data[i] for i in range(len(data))])
 
 
 ##########################################################################################################
