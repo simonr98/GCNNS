@@ -23,19 +23,64 @@ params:
   path: "output"   # location to save results in
 
 ---
-name: "ModelNetClassification"
+name: "DGCNN_PCD_COM"
 path: "output"
 repetitions: 1   # repeat 8 times
 
 # Experiment Parameters
 params:
-  algorithm: 'voxel_point_prediction' # voxel_point_prediction
-  run_name: 'voxel_point_prediction'
-  input: 'mesh'
-  save: False
+  algorithm: 'torus_com_prediction' # voxel_point_prediction
+  run_name: 'pcd_com_prediction'
+  input: 'pcd'
+  save: True
   wandb: True
-  num_epochs: 15
-  lr: 0.001
+  num_epochs: 50
+  lr: 0.0001
+
+---
+name: "DGCNN_PCD_WITHOUT_NOISE_COM"
+path: "output"
+repetitions: 1   # repeat 8 times
+
+# Experiment Parameters
+params:
+  algorithm: 'torus_com_prediction' # voxel_point_prediction
+  run_name: 'pcd_without_noise_com_prediction'
+  input: 'pcd_without_noise'
+  save: True
+  wandb: True
+  num_epochs: 50
+  lr: 0.0001
+
+---
+name: "DGCNN_PCD_WITHOUT_NOISE_COM"
+path: "output"
+repetitions: 1   # repeat 8 times
+
+# Experiment Parameters
+params:
+  algorithm: 'torus_com_prediction' # voxel_point_prediction
+  run_name: 'pcd_without_noise_com_prediction'
+  input: 'pcd_without_noise'
+  save: True
+  wandb: True
+  num_epochs: 50
+  lr: 0.0001
+
+---
+name: "DGCNN_MESH_COM"
+path: "output"
+repetitions: 1   # repeat 8 times
+
+# Experiment Parameters
+params:
+  algorithm: 'torus_com_prediction' # voxel_point_prediction
+  run_name: 'mesh_com_prediction'
+  input: 'mesh'
+  save: True
+  wandb: True
+  num_epochs: 50
+  lr: 0.0001
 
 
 

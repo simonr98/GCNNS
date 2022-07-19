@@ -28,6 +28,32 @@ def get_test_data_voxel():
         test_data = pickle.load(input_file)
     return test_data
 
+def plot_voxel_trajectory():
+    voxel_train_data = get_voxel_data(get_train_data_voxel(), INDEX_TRACK_POINT_VOXEL, NUM_POINTS_POINT_CLOUD)
+    nodes, pcd, target = voxel_train_data.nodes, voxel_train_data.pcd, voxel_train_data.y
+
+    nodes, pcd, target = join_trajectories(nodes), join_trajectories(pcd), join_trajectories(target)
+
+    #####################
+    # plot point of interest over time
+    #####################
+
+    fig = plt.figure(1, figsize=(100, 100))
+
+    for i in range(1, 60):
+        fig.add_subplot(10, 6, i)
+
+        x, y = pcd[i][:, 0], pcd[i][:, 1]
+        plt.scatter(x, y)
+
+        x, y = target[i, 0], target[i, 1]
+
+        plt.plot([x], [y], marker='o', markersize=10, color="red")
+
+        i += 1
+
+    plt.show()
+
 
 def get_one_voxel_trajectory(train_data: Optional[list], index_t: int, index_poi: int, num_points_point_cloud=60):
     data_t = train_data[index_t]

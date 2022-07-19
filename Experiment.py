@@ -11,21 +11,19 @@ class Experiment:
         self.track_point_index = config.get('track_point_index', 67)
         self.num_epochs = config.get('num_epochs', 200)
         self.algorithm = config.get('algorithm', 'point_net_classification')
-        self.save = config.get('save', False)
+        self.batch_size = config.get('batch_size', 32)
+        self.save = config.get('save', True)
         self.lr = config.get('lr', 0.001)
-        self.project_name = 'GCNNS'
+        self.project_name = 'GCNNS_NEW'
         self.input = config.get('input', 'pcd')
-        self.model_save_path = config.get('model_save_path', f'models/{self.algorithm}')
+        self.model_save_path = config.get('model_save_path', f'output/saved_models/{self.algorithm}_{self.input}')
         self.run_name = config.get('run_name', 'test')
         self.wandb = config.get('wandb', False)
         self.wandb_config = {}
         self.wandb_logging_parameters = {}
 
     def setup_wandb(self):
-        self.wandb_config.update({
-            'project_name': self.project_name,
-            'run_name': self.run_name,
-        })
+        self.wandb_config.update({'project_name': self.project_name, 'run_name': self.run_name})
 
     def run_experiment(self):
         if self.wandb:
@@ -39,16 +37,19 @@ class Experiment:
 
         if self.algorithm == 'point_net_classification':
             train_loader, test_loader = get_model_net_data(num_points_pc=NUM_POINTS_POINT_CLOUD,
-                                                           batch_size=BATCH_SIZE_VOXEL)
+                                                           batch_size=self.batch_size)
 
             algorithm = ClassificationAlgorithm(num_classes=train_loader.dataset.num_classes, lr=self.lr)
 
             for epoch in range(1, self.num_epochs + 1):
                 loss = algorithm.train(train_loader)
                 test_acc = algorithm.test(test_loader)
+
                 print(f'Epoch {epoch:03d}, Loss: {loss:.4f}, Test: {test_acc:.4f}')
+
                 if self.save:
                     T.save(algorithm.model.state_dict(), f'{self.model_save_path}_{epoch}_epochs')
+
                 algorithm.scheduler.step()
 
                 if self.wandb:
@@ -64,32 +65,34 @@ class Experiment:
                 loss = algorithm.train(train_loader)
                 error = algorithm.test(test_loader)
                 print(f'Epoch {epoch:03d}, Loss: {loss:.4f}, Error per sample: {error:.4f}')
+
                 if self.save:
                     T.save(algorithm.model.state_dict(), f'{self.model_save_path}_{epoch}_epochs')
-                algorithm.scheduler.step()
-
-                if self.wandb:
-                    self.wandb_logging_parameters.update({'loss': loss, 'epochs': epoch, 'error': error})
-                    wandb.log(self.wandb_logging_parameters)
-
-        def run_torus_algorithm(com: bool):
-            train_loader, test_loader = get_torus_data_loaders(com=com, key=self.input)
-            algorithm = PointTrackingAlgorithm(point_dim=3, out_channels=3, lr=self.lr)
-
-            for epoch in range(1, self.num_epochs + 1):
-                loss = algorithm.train(train_loader)
-                error = algorithm.test(test_loader)
-                print(f'Epoch {epoch:03d}, Loss: {loss:.4f}, Error per sample: {error:.4f}')
-                if self.save:
-                    T.save(algorithm.model.state_dict(), f'{self.model_save_path}_{epoch}_epochs')
-                algorithm.scheduler.step()
 
                 if self.wandb:
                     self.wandb_logging_parameters.update({'loss': loss, 'epochs': epoch, 'error': error})
                     wandb.log(self.wandb_logging_parameters)
 
         if self.algorithm == 'torus_com_prediction':
-            run_torus_algorithm(com=True)
+            self.run_torus_algorithm(com=True)
 
         if self.algorithm == 'torus_pos_prediction':
-            run_torus_algorithm(com=False)
+            self.run_torus_algorithm(com=False)
+
+    def run_torus_algorithm(self, com: bool = True):
+        train_loader, test_loader = get_torus_data_loaders(com=com, key=self.input)
+        algorithm = PointTrackingAlgorithm(point_dim=3, out_channels=3, lr=self.lr)
+
+        for epoch in range(1, self.num_epochs + 1):
+            loss = algorithm.train(train_loader)
+            error = algorithm.test(test_loader)
+
+            print(f'Epoch {epoch:03d}, Loss: {loss:.4f}, Error per sample: {error:.4f}')
+
+            if self.save and epoch % 10 == 0:
+                T.save(algorithm.model, f'{self.model_save_path}_{epoch}_epochs')
+                print('model saved')
+
+            if self.wandb:
+                self.wandb_logging_parameters.update({'loss': loss, 'epochs': epoch, 'error': error})
+                wandb.log(self.wandb_logging_parameters)

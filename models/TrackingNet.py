@@ -17,9 +17,9 @@ class TrackingNet(torch.nn.Module):
         self.mlp = MLP([1024, 512, 256, out_channels], dropout=0.5)
 
     def forward(self, data):
-        data, batch = data.data, data.batch
+        pos, batch = data.pos, data.batch
 
-        x1 = self.conv1(data, batch)
+        x1 = self.conv1(pos, batch)
         x2 = self.conv2(x1, batch)
         out = self.lin1(torch.cat([x1, x2], dim=1))
 
